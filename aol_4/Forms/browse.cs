@@ -66,9 +66,9 @@ namespace aol.Forms
                 wndWidth = this.Width;
                 wndHeight = this.Height;
                 maximized = true;
-                this.Location = new Point(0, 106);
+                this.Location = new Point(0, 116);
                 this.Width = Parent.Width - 4;
-                this.Height = Parent.Height - 110;
+                this.Height = Parent.Height - 120;
                 maxBtn.Image = Properties.Resources.restore_btn;
             }
         }
@@ -167,10 +167,31 @@ namespace aol.Forms
             return "";
         }
 
+        public string GenerateURLFromString(string urlArg)
+        {
+            if (urlArg == "") url = "https://www.google.com";
+            if (!urlArg.Contains("."))
+                url = searchProvider(urlArg);
+            else
+                url = urlArg.StartsWith("https://") ? urlArg : urlArg = "https://" + urlArg;
+
+            Uri outUri;
+            if (Uri.TryCreate(url, UriKind.Absolute, out outUri) && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps))
+            {
+                WebView.Source = new Uri(url);
+            }
+            else
+            {
+                MessageBox.Show($"Invalid URL: {url}");
+                url = "https://www.google.com";
+            }
+
+            return url;
+        }
+
         public void goToUrl(string url)
         {
-            //browser.Load(url);
-            WebView.Source = new Uri(url);
+            WebView.Source = new Uri(GenerateURLFromString(url));
         }
 
         public Browse(string urlArg = "")
@@ -182,14 +203,8 @@ namespace aol.Forms
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
 
-            if (urlArg == "") url = "https://www.google.com";
-            if (!urlArg.Contains("."))
-                url = searchProvider(urlArg);
-            else
-                url = urlArg.StartsWith("https://") ? urlArg : urlArg = "https://" + urlArg;
-
             wv2 = WebView;
-            WebView.Source = new Uri(url);
+            WebView.Source = new Uri(GenerateURLFromString(urlArg));
         }
         #endregion
 
